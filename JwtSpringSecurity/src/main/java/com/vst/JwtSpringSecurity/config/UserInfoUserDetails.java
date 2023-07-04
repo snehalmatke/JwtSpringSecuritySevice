@@ -9,17 +9,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.vst.JwtSpringSecurity.dto.UserDto;
-import com.vst.JwtSpringSecurity.model.UserInfo;
+import com.vst.JwtSpringSecurity.dto.UserInfo;
 
 public class UserInfoUserDetails implements UserDetails {
 
-	 private String name;
+	 private String userFirstName;
 	    private String password;
 	    private List<GrantedAuthority> authorities;
 
 	    public UserInfoUserDetails(UserInfo userInfo) {
-	        name=userInfo.getName();
+	    	userFirstName=userInfo.getUserFirstName();
 	        password=userInfo.getPassword();
 	        authorities= Arrays.stream(userInfo.getRoles().split(","))
 	                .map(SimpleGrantedAuthority::new)
@@ -38,7 +37,7 @@ public class UserInfoUserDetails implements UserDetails {
 
 	    @Override
 	    public String getUsername() {
-	        return name;
+	        return userFirstName;
 	    }
 
 	    @Override

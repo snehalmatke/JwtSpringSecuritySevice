@@ -2,6 +2,8 @@ package com.vst.JwtSpringSecurity.dto;
 
 import java.util.Date;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +17,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+@Document(collection = "users")
+public class UserInfo {
 
 	@Id
 	private String userId;
@@ -64,14 +67,13 @@ public class UserDto {
 	
 	private Date modifiedDate;
 
-	private boolean isActive;
+	private boolean isActive = true;
 	
 	private String password;
-
-	public String getRoles() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
+	private String roles;
+
+
+
 	
 }

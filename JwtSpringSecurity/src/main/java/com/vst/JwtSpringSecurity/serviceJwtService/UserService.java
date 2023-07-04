@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.vst.JwtSpringSecurity.dto.UserDto;
-import com.vst.JwtSpringSecurity.model.UserInfo;
+import com.vst.JwtSpringSecurity.dto.UserInfo;
+import com.vst.JwtSpringSecurity.exception.NotAcceptableException;
+import com.vst.JwtSpringSecurity.exception.ValidatorException;
 import com.vst.JwtSpringSecurity.repository.UserInfoRepository;
 import com.vst.JwtSpringSecurity.utility.Utility;
 
@@ -36,38 +37,32 @@ public class UserService {
 	UserInfoRepository userRepo;
 
 	@Autowired
-	PasswordEncoder passwordEncoder;
+	PasswordEncoder passwordEncoder;	
+	
+	
+	public void addUser(UserInfo userInfo) {
+	    userInfo.setUserId("USR" + getGeneratedId());
+	    userInfo.setUserFirstName(utility.toTitleCase(userInfo.getUserFirstName()));
+	    userInfo.setUserLastName(utility.toTitleCase(userInfo.getUserLastName()));
+	    userInfo.setUserState(utility.toTitleCase(userInfo.getUserState()));
+	    userInfo.setUserCity(utility.toTitleCase(userInfo.getUserCity()));
+	    userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
+	    
+	    UserInfo existingUserEmail = userRepo.findByUserEmailIgnoreCaseAndIsActiveTrue(userInfo.getUserEmail());
+	    if (existingUserEmail != null) {
+	        throw new ValidatorException("Email ID already exists. Please use a different email.");
+	    }
 
-	public String addUser(UserInfo userInfo) {
-		userInfo.setId(getGeneratedId());
-		userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
-		userRepo.save(userInfo);
-		return "user added to system ";
+	    UserInfo existingUserContactNo = userRepo.findByUserContactNoAndIsActiveTrue(userInfo.getUserContactNo());
+	    if (existingUserContactNo != null) {
+	        throw new ValidatorException("ContactNo already exists. Please use a different ContactNo.");
+	    }
+
+	    UserInfo existsUser = userRepo.findByUserId(userInfo.getUserId());
+	    if (existsUser != null) {
+	        userInfo.setUserId("USR" + getGeneratedId());
+	    }
+	    userRepo.save(userInfo);
 	}
-
-//    @Transactional
-//	public boolean addUser(UserDto userDto) {
-//
-//		try {
-//			// mongoConfig.mongoClient();
-//			Date dNow = new Date();
-//			userDto.setUserFirstName(utility.toTitleCase(userDto.getUserFirstName()));
-//			userDto.setUserLastName(utility.toTitleCase(userDto.getUserLastName()));
-//			userDto.setUserState(utility.toTitleCase(userDto.getUserState()));
-//			userDto.setUserCity(utility.toTitleCase(userDto.getUserCity()));
-//			userDto.setActive(true);
-//			userDto.setUserId("USR" + getGeneratedId());
-//	        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-//
-//			if(userRepo.save(userDto)!=null) {
-//			return true;
-//			}else
-//				return false;
-//		} catch (Exception exception) {
-//			exception.printStackTrace();
-//		}
-//		return false;
-//
-//	}
 
 }

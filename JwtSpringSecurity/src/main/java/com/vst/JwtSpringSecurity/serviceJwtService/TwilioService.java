@@ -54,13 +54,13 @@ public class TwilioService {
 
    
 
-    public void sendOtp(String phoneNumber) {
+    public boolean sendOtp(String phoneNumber) {
         // Check if OTP already exists for the phone number
         OtpRequestDto existingOtp = otpRepository.findByPhoneNumber(phoneNumber);
         if (existingOtp != null) {
             // OTP already exists, do not generate a new one
             System.out.println("OTP already generated for phone number: " + phoneNumber);
-            return;
+            return true; // Indicate that the OTP was already generated
         }
 
         int otp = generateOtp();
@@ -79,14 +79,20 @@ public class TwilioService {
             ).create();
 
             System.out.println("OTP sent successfully. Message SID: " + message.getSid());
+
+            // Invoke the cleanup task to delete expired OTP data
+            otpCleanupTask.cleanupExpiredOtp();;
+
+            return true; // Indicate that the OTP was sent successfully
         } catch (Exception e) {
             // Handle the exception here (e.g., log the error, notify the administrator, etc.)
             System.out.println("Failed to send OTP: " + e.getMessage());
+            return false; // Indicate that the OTP failed to send
         }
     }
 
 
-    
+  
 
     public boolean verifyOtp(OtpRequestDto otpRequestDto) {
         OtpRequestDto otpRequestDto2 = otpRepository.findByPhoneNumber(otpRequestDto.getPhoneNumber());

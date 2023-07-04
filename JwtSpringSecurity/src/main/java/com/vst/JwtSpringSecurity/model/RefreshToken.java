@@ -4,6 +4,8 @@ import java.time.Instant;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.vst.JwtSpringSecurity.dto.UserInfo;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

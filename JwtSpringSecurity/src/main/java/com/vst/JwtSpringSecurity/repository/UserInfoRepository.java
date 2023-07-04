@@ -4,14 +4,18 @@ import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.vst.JwtSpringSecurity.dto.UserDto;
-import com.vst.JwtSpringSecurity.model.UserInfo;
-
+import com.vst.JwtSpringSecurity.dto.UserInfo;
 
 public interface UserInfoRepository extends MongoRepository<UserInfo, Integer> {
 
-    Optional<UserInfo> findByName(String username);
+	Optional<UserInfo> findByUserFirstName(String userFirstName);
 
-	UserDto save(UserDto userDto);
+	
+	UserInfo save(UserInfo userInfo);
 
+	UserInfo findByUserEmailIgnoreCaseAndIsActiveTrue(String userEmail);
+
+	UserInfo findByUserContactNoAndIsActiveTrue(String userContactNo);
+
+	UserInfo findByUserId(String userId);
 }

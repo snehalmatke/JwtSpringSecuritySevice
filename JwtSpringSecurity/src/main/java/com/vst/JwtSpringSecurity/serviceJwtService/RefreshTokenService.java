@@ -15,13 +15,14 @@ import com.vst.JwtSpringSecurity.repository.UserInfoRepository;
 public class RefreshTokenService {
 
 	  @Autowired
-	    private RefreshTokenRepository refreshTokenRepository;
+	   private RefreshTokenRepository refreshTokenRepository;
+	  
 	    @Autowired
 	    private UserInfoRepository userInfoRepository;
 
-	    public RefreshToken createRefreshToken(String username) {
+	    public RefreshToken createRefreshToken(String firstName) {
 	        RefreshToken refreshToken = RefreshToken.builder()
-	                .userInfo(userInfoRepository.findByName(username).get())
+	                .userInfo(userInfoRepository.findByUserFirstName(firstName).get())
 	                .token(UUID.randomUUID().toString())
 	                .expiryDate(Instant.now().plusMillis(600000))//10
 	                .build();

@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.vst.JwtSpringSecurity.model.UserInfo;
+import com.vst.JwtSpringSecurity.dto.UserInfo;
 import com.vst.JwtSpringSecurity.repository.UserInfoRepository;
 
 @Component
@@ -18,10 +18,10 @@ public class UserInfoUserDetailsService implements  UserDetailsService{
 	    private UserInfoRepository repository;
 
 	    @Override
-	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-	        Optional<UserInfo> userInfo = repository.findByName(username);
+	    public UserDetails loadUserByUsername(String firstName) throws UsernameNotFoundException {
+	        Optional<UserInfo> userInfo = repository.findByUserFirstName(firstName);
 	        return userInfo.map(UserInfoUserDetails::new)
-	                .orElseThrow(() -> new UsernameNotFoundException("user not found " + username));
+	                .orElseThrow(() -> new UsernameNotFoundException("user not found " + firstName));
 
 	    }
 }

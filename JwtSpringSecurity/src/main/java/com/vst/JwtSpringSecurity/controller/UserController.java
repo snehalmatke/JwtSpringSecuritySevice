@@ -25,9 +25,9 @@ import com.vst.JwtSpringSecurity.dto.AuthRequest;
 import com.vst.JwtSpringSecurity.dto.JwtResponse;
 import com.vst.JwtSpringSecurity.dto.OtpRequestDto;
 import com.vst.JwtSpringSecurity.dto.RefreshTokenRequest;
-import com.vst.JwtSpringSecurity.dto.UserDto;
+import com.vst.JwtSpringSecurity.dto.UserInfo;
+import com.vst.JwtSpringSecurity.exception.ValidatorException;
 import com.vst.JwtSpringSecurity.model.RefreshToken;
-import com.vst.JwtSpringSecurity.model.UserInfo;
 import com.vst.JwtSpringSecurity.serviceJwtService.JwtService;
 import com.vst.JwtSpringSecurity.serviceJwtService.RefreshTokenService;
 import com.vst.JwtSpringSecurity.serviceJwtService.TwilioService;
@@ -60,12 +60,21 @@ public class UserController {
 	    @PostMapping("/send-otp")
 	    public ResponseEntity<String> sendOtp(@RequestBody OtpRequestDto otpRequestDto) {
 	        try {
-	            twilioService.sendOtp(otpRequestDto.getPhoneNumber());
-	            return ResponseEntity.ok("OTP sent successfully");
+	            boolean otpSent = twilioService.sendOtp(otpRequestDto.getPhoneNumber());
+	            if (otpSent) {
+	                return ResponseEntity.ok("OTP sent successfully");
+	            } else {
+	                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP");
+	            }
 	        } catch (Exception e) {
+	            System.out.println("Failed to send OTP: " + e.getMessage());
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP");
 	        }
 	    }
+
+
+
+
 
 	   
 	    
@@ -83,20 +92,16 @@ public class UserController {
 	    }
 
 	    @PostMapping("/register")
-	    public String addNewUser(@RequestBody UserInfo userInfo) {
-	        return userService.addUser(userInfo);
+	    public ResponseEntity<String> addNewUser(@Valid @RequestBody UserInfo userInfo) {
+	        try {
+	            userService.addUser(userInfo);
+	            return ResponseEntity.ok("User added to the system");
+	        } catch (ValidatorException e) {
+	            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+	        }
 	    }
-	    
-	    
-//	    @PostMapping("/registerUser")
-//		public ResponseEntity<String> addUser(@Valid @RequestBody UserDto userDto) {
-//			if (userService.addUser(userDto)) {
-//				return new ResponseEntity<>("User data added successfully", HttpStatus.OK);
-//			} else {
-//				return new ResponseEntity<>("Data did not added", HttpStatus.BAD_REQUEST);
-//			}
-//		}
-	    
+
+	     
 
 	    @PostMapping("/login")
 	    public JwtResponse authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
@@ -117,7 +122,7 @@ public class UserController {
 	                .map(refreshTokenService::verifyExpiration)
 	                .map(RefreshToken::getUserInfo)
 	                .map(userInfo -> {
-	                    String accessToken = jwtService.generateToken(userInfo.getName());
+	                    String accessToken = jwtService.generateToken(userInfo.getUserFirstName());
 	                    return JwtResponse.builder()
 	                            .accessToken(accessToken)
 	                            .token(refreshTokenRequest.getToken())
