@@ -14,6 +14,7 @@
 //@AllArgsConstructor
 //@NoArgsConstructor
 //@Builder
+//@Document(collection = "users")
 //public class UserInfo {
 //
 //	@Id
@@ -31,7 +32,7 @@
 //	private String userProfilePhoto;
 //	private Date createdDate;
 //	private Date modifiedDate;
-//	private boolean isActive = true;
+////	private boolean isActive;
 //	private String password;
 //	private String roles;
 //

@@ -20,9 +20,9 @@ public class RefreshTokenService {
 	    @Autowired
 	    private UserInfoRepository userInfoRepository;
 
-	    public RefreshToken createRefreshToken(String firstName) {
+	    public RefreshToken createRefreshToken(String username) {
 	        RefreshToken refreshToken = RefreshToken.builder()
-	                .userInfo(userInfoRepository.findByUserFirstName(firstName).get())
+	                .userInfo(userInfoRepository.findByUserContactNo(username).get())
 	                .token(UUID.randomUUID().toString())
 	                .expiryDate(Instant.now().plusMillis(600000))//10
 	                .build();

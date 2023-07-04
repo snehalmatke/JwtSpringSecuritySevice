@@ -47,6 +47,7 @@ public class UserService {
 	    userInfo.setUserState(utility.toTitleCase(userInfo.getUserState()));
 	    userInfo.setUserCity(utility.toTitleCase(userInfo.getUserCity()));
 	    userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
+	    userInfo.setRoles("USER");
 	    
 	    UserInfo existingUserEmail = userRepo.findByUserEmailIgnoreCaseAndIsActiveTrue(userInfo.getUserEmail());
 	    if (existingUserEmail != null) {

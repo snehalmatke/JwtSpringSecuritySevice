@@ -13,12 +13,12 @@ import com.vst.JwtSpringSecurity.dto.UserInfo;
 
 public class UserInfoUserDetails implements UserDetails {
 
-	 private String userFirstName;
+	 private String userContactNo;
 	    private String password;
 	    private List<GrantedAuthority> authorities;
 
 	    public UserInfoUserDetails(UserInfo userInfo) {
-	    	userFirstName=userInfo.getUserFirstName();
+	    	userContactNo=userInfo.getUserContactNo();
 	        password=userInfo.getPassword();
 	        authorities= Arrays.stream(userInfo.getRoles().split(","))
 	                .map(SimpleGrantedAuthority::new)
@@ -37,7 +37,7 @@ public class UserInfoUserDetails implements UserDetails {
 
 	    @Override
 	    public String getUsername() {
-	        return userFirstName;
+	        return userContactNo;
 	    }
 
 	    @Override
