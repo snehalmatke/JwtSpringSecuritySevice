@@ -35,7 +35,7 @@ public class SecurityConfig {
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	        return http.csrf().disable()
 	                .authorizeRequests()
-	                .requestMatchers("/auth/register", "/auth/login", "/auth/refreshToken").permitAll()
+	                .requestMatchers("/auth/register", "/auth/loginByContactNO", "/auth/refreshToken").permitAll()
 	                .requestMatchers("/auth/.*").authenticated()
 	                .and()
 	                .sessionManagement()
@@ -45,6 +45,7 @@ public class SecurityConfig {
 	                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
 	                .build();
 	    }
+
 
 	    @Bean
 	    public PasswordEncoder passwordEncoder() {

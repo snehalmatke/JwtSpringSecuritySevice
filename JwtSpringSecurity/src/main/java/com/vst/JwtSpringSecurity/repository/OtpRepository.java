@@ -16,5 +16,5 @@ public interface OtpRepository extends MongoRepository<OtpRequestDto, String>{
     List<OtpRequestDto> findByExpiryTimeBefore(LocalDateTime expiryTime);
 
 
-	
+	List<OtpRequestDto> findByPhoneNumberAndOtp(String phoneNumber, int otp);
 }

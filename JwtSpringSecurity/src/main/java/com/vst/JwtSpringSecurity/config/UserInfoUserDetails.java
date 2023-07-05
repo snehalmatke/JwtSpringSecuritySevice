@@ -14,7 +14,7 @@ import com.vst.JwtSpringSecurity.dto.UserInfo;
 public class UserInfoUserDetails implements UserDetails {
 
 	 private String userContactNo;
-	    private String password;
+	 private String password;
 	    private List<GrantedAuthority> authorities;
 
 	    public UserInfoUserDetails(UserInfo userInfo) {
@@ -24,6 +24,8 @@ public class UserInfoUserDetails implements UserDetails {
 	                .map(SimpleGrantedAuthority::new)
 	                .collect(Collectors.toList());
 	    }
+	    
+
 
 	    @Override
 	    public Collection<? extends GrantedAuthority> getAuthorities() {

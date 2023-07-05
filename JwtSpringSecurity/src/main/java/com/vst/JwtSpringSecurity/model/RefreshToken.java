@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class RefreshToken {
 
 	
-	 private int id;
+	 private String id;
 
 	    private String token;
 

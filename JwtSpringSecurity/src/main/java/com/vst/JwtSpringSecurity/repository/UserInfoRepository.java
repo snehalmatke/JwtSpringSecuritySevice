@@ -18,6 +18,8 @@ public interface UserInfoRepository extends MongoRepository<UserInfo, Integer> {
 	UserInfo findByUserContactNoAndIsActiveTrue(String userContactNo);
 	
 	Optional<UserInfo> findByUserContactNo(String userContactNo);
+	
+	Optional<UserInfo> findByUserEmail(String userEmail);
 
 	UserInfo findByUserId(String userId);
 }
