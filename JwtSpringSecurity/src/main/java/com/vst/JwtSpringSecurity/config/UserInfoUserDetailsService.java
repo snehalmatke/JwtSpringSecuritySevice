@@ -14,7 +14,7 @@ import com.vst.JwtSpringSecurity.repository.UserInfoRepository;
 @Component
 public class UserInfoUserDetailsService implements  UserDetailsService{
 
-	 @Autowired
+		@Autowired
 	    private UserInfoRepository repository;
 
 	    @Override

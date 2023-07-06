@@ -69,7 +69,13 @@ public class UserInfo {
 
 	private boolean isActive = true;
 	
+	@NotNull(message = "Password must not be Null")
+	@NotBlank(message = "Password must not be Blank")
+	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8}$", message = "Password should contain a combination of at least one lowercase letter, one first letter uppercase , one digit, and one special character. It should be exactly 8 characters long.")
 	private String password;
+
+
+
 	
 	private String roles;
 

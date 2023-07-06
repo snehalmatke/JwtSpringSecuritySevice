@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -18,57 +21,66 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtService {
 
-	 public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+    // Secret key used for signing JWTs
+    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
+    // Extract the username from the token
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
 
-	    public String extractUsername(String token) {
-	        return extractClaim(token, Claims::getSubject);
-	    }
+    // Extract the expiration date from the token
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
 
-	    public Date extractExpiration(String token) {
-	        return extractClaim(token, Claims::getExpiration);
-	    }
+    // Extract a specific claim from the token using the given claims resolver function
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
 
-	    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-	        final Claims claims = extractAllClaims(token);
-	        return claimsResolver.apply(claims);
-	    }
+    // Parse the token and retrieve all the claims
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey()) // Set the signing key used for verification
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
-	    private Claims extractAllClaims(String token) {
-	        return Jwts
-	                .parserBuilder()
-	                .setSigningKey(getSignKey())
-	                .build()
-	                .parseClaimsJws(token)
-	                .getBody();
-	    }
+    // Check if the token is expired
+    private Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
 
-	    private Boolean isTokenExpired(String token) {
-	        return extractExpiration(token).before(new Date());
-	    }
+    // Validate the token by checking the username and expiration
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
 
-	    public Boolean validateToken(String token, UserDetails userDetails) {
-	        final String username = extractUsername(token);
-	        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-	    }
+    // Generate a new JWT token for the given username
+    public String generateToken(String userName) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, userName);
+    }
 
+    // Create the JWT token with the specified claims and subject (username)
+    private String createToken(Map<String, Object> claims, String userName) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userName)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 2)) // Token expiration time (2 minutes)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256) // Set the signing key and algorithm
+                .compact();
+    }
 
-	    public String generateToken(String userName){
-	        Map<String,Object> claims=new HashMap<>();
-	        return createToken(claims,userName);
-	    }
+    // Get the signing key used for token verification
+    private Key getSignKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET); // Decode the Base64 encoded secret key
+        return Keys.hmacShaKeyFor(keyBytes); // Create the HMAC-SHA signing key using the key bytes
+    }
 
-	    private String createToken(Map<String, Object> claims, String userName) {
-	        return Jwts.builder()
-	                .setClaims(claims)
-	                .setSubject(userName)
-	                .setIssuedAt(new Date(System.currentTimeMillis()))
-	                .setExpiration(new Date(System.currentTimeMillis()+1000*60*2))
-	                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
-	    }
-
-	    private Key getSignKey() {
-	        byte[] keyBytes= Decoders.BASE64.decode(SECRET);
-	        return Keys.hmacShaKeyFor(keyBytes);
-	    }
 }

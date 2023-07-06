@@ -1,6 +1,7 @@
 package com.vst.JwtSpringSecurity.dto;
 
 import java.time.Instant;
+import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,7 +18,11 @@ public class OtpRequestDto {
 	private int otp;
 	
 	 private Instant expiryTime;
+	
+	 private int attempts;
 
+	 private Instant currentTime ;
+	 
 	public OtpRequestDto(String phoneNumber, int otp) {
 		super();
 		this.phoneNumber = phoneNumber;

@@ -70,7 +70,7 @@ public class UserController {
 	            if (otpSent) {
 	                return ResponseEntity.ok("OTP sent successfully");
 	            } else {
-	                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP");
+	                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP, try after sometime");
 	            }
 	        } catch (Exception e) {
 	            System.out.println("Failed to send OTP: " + e.getMessage());
