@@ -3,6 +3,7 @@ package com.vst.JwtSpringSecurity.dto;
 import java.time.Instant;
 import java.util.Date;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;

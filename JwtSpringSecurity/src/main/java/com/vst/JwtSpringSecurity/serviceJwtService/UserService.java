@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.vst.JwtSpringSecurity.dto.OtpRequestDto;
 import com.vst.JwtSpringSecurity.dto.UserInfo;
 import com.vst.JwtSpringSecurity.exception.NotAcceptableException;
 import com.vst.JwtSpringSecurity.exception.ValidatorException;
+import com.vst.JwtSpringSecurity.repository.OtpRepository;
 import com.vst.JwtSpringSecurity.repository.UserInfoRepository;
 import com.vst.JwtSpringSecurity.utility.Utility;
 
@@ -30,6 +32,10 @@ public class UserService {
 
 	}
 
+	
+	@Autowired
+	OtpRepository otpRepository;
+	
 	@Autowired
 	Utility utility;
 

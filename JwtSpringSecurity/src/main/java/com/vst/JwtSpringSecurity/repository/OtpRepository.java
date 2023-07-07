@@ -18,6 +18,4 @@ public interface OtpRepository extends MongoRepository<OtpRequestDto, String>{
 
 	List<OtpRequestDto> findByPhoneNumberAndOtp(String phoneNumber, int otp);
 	
-	
-	List<OtpRequestDto> findByOtp(int otp);
 }

@@ -27,16 +27,16 @@ public class OtpCleanupTask {
 	 
 	 @Scheduled(fixedDelay = 60_000) // Run every 4 minutes (240,000 milliseconds)
 	 public void cleanupExpiredOtp() {
-	     LocalDateTime currentTime = LocalDateTime.now().minus(4, ChronoUnit.MINUTES);
+	     LocalDateTime currentTime = LocalDateTime.now().minus(1, ChronoUnit.MINUTES);
 	     List<OtpRequestDto> expiredOtpList = otpRepository.findByExpiryTimeBefore(currentTime);
 	     for (OtpRequestDto otp : expiredOtpList) {
-	         // Set the fields to be deleted to null or default values
-	         otp.setOtp(0); // Set the otp field to 0 (or any default value)
-	         otp.setExpiryTime(null); // Set the expiryTime field to null
-	         otp.setAttempts(0); // Set the attempts field to 0 (or any default value)
-	         otp.setCurrentTime(null); // Set the currentTime field to null
+	        
+	         otp.setOtp(0);
+	         otp.setExpiryTime(null); 
+	         otp.setAttempts(0); 
+	         otp.setCurrentTime(null); 
 
-	         // Save the updated OTP object
+	         
 	         otpRepository.save(otp);
 	     }
 	 }
