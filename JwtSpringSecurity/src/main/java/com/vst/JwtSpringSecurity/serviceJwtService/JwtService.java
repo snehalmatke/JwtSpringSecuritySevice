@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
+
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -64,6 +64,7 @@ public class JwtService {
     public String generateToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userName);
+
     }
 
     // Create the JWT token with the specified claims and subject (username)
@@ -72,7 +73,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 2)) // Token expiration time (2 minutes)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 60)) // Token expiration time (2 months)
                 .signWith(getSignKey(), SignatureAlgorithm.HS256) // Set the signing key and algorithm
                 .compact();
     }
@@ -81,6 +82,16 @@ public class JwtService {
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET); // Decode the Base64 encoded secret key
         return Keys.hmacShaKeyFor(keyBytes); // Create the HMAC-SHA signing key using the key bytes
+    }
+    
+    // Extract the user ID from the JWT token in the request header
+    public String extractUserIdFromHeader(String header) {
+        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
+            String token = header.substring(7); // Remove the "Bearer " prefix
+            Claims claims = extractAllClaims(token);
+            return claims.getId();
+        }
+        return null; // Return null if the header is empty or doesn't start with "Bearer "
     }
 
 }

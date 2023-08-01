@@ -4,7 +4,7 @@ import java.time.Instant;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.vst.JwtSpringSecurity.dto.UserInfo;
+import com.vst.JwtSpringSecurity.dto.HostDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +27,8 @@ public class RefreshToken {
 
 //	    @OneToOne
 //	    @JoinColumn(name = "user_id", referencedColumnName = "id")
-	    private UserInfo userInfo;
+//	    private UserInfo userInfo;
 
+	    
+	   private HostDto hostDto;
 }

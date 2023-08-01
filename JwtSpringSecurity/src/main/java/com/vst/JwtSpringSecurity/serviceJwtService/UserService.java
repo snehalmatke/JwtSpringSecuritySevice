@@ -8,68 +8,76 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.vst.JwtSpringSecurity.dto.HostDto;
 import com.vst.JwtSpringSecurity.dto.OtpRequestDto;
-import com.vst.JwtSpringSecurity.dto.UserInfo;
-import com.vst.JwtSpringSecurity.exception.NotAcceptableException;
-import com.vst.JwtSpringSecurity.exception.ValidatorException;
-import com.vst.JwtSpringSecurity.repository.OtpRepository;
-import com.vst.JwtSpringSecurity.repository.UserInfoRepository;
+import com.vst.JwtSpringSecurity.dto.UserDto;
+
 import com.vst.JwtSpringSecurity.utility.Utility;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
-
-	public String getGeneratedId() {
-		String number = "";
-		Date dNow = new Date();
-		SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		return ft.format(dNow) + number;
-
-	}
-
-	
-	@Autowired
-	OtpRepository otpRepository;
-	
-	@Autowired
-	Utility utility;
-
-	@Autowired
-	UserInfoRepository userRepo;
-
-	@Autowired
-	PasswordEncoder passwordEncoder;	
 	
 	
-	public void addUser(UserInfo userInfo) {
-	    userInfo.setUserId("USR" + getGeneratedId());
-	    userInfo.setUserFirstName(utility.toTitleCase(userInfo.getUserFirstName()));
-	    userInfo.setUserLastName(utility.toTitleCase(userInfo.getUserLastName()));
-	    userInfo.setUserState(utility.toTitleCase(userInfo.getUserState()));
-	    userInfo.setUserCity(utility.toTitleCase(userInfo.getUserCity()));
-	    userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
-	    userInfo.setRoles("USER");
-	    
-	    UserInfo existingUserEmail = userRepo.findByUserEmailIgnoreCaseAndIsActiveTrue(userInfo.getUserEmail());
-	    if (existingUserEmail != null) {
-	        throw new ValidatorException("Email ID already exists. Please use a different email.");
-	    }
+	@Autowired
+	private Utility utility;
 
-	    UserInfo existingUserContactNo = userRepo.findByUserContactNoAndIsActiveTrue(userInfo.getUserContactNo());
-	    if (existingUserContactNo != null) {
-	        throw new ValidatorException("ContactNo already exists. Please use a different ContactNo.");
-	    }
+	@Autowired
+	private PasswordEncoder passwordEncoder;	
+	
+	  @Autowired
+	 private Environment environment;
+	  
+	  public String getGeneratedId() {
+			String number = "";
+			Date dNow = new Date();
+			SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+			return ft.format(dNow) + number;
 
-	    UserInfo existsUser = userRepo.findByUserId(userInfo.getUserId());
-	    if (existsUser != null) {
-	        userInfo.setUserId("USR" + getGeneratedId());
-	    }
-	    userRepo.save(userInfo);
+		}
+
+	  
+	public int checkIfUserExist(String phoneNumber) {
+		int flag=0;
+		//check if exist in host db
+		  RestTemplate restTemplate = new RestTemplate();
+		  String userUrl = environment.getProperty("manageUser.url", String.class);
+		  String url=userUrl+"getUserDataByContactNo?userContactNo="+phoneNumber;
+		  
+		  try {
+	        ResponseEntity<UserDto> response = restTemplate.exchange(
+	                url,
+	                HttpMethod.GET,
+	                null,
+	                UserDto.class
+	        );
+
+	        if (response.getStatusCode().is2xxSuccessful()) {
+	        	UserDto userDto = response.getBody();
+	            if(userDto!=null) {
+	            	return flag=1;
+	            }
+	            else if(userDto==null) {
+					return flag=2;
+				}
+	           
+	        } else {
+	            System.out.println("Request failed with response code: " + response.getStatusCodeValue());
+	            return flag=2;
+	        }
+		  }catch (Exception e) {
+			  return flag=2;
+		}
+			return flag;
+		
 	}
 
 
